@@ -1,9 +1,9 @@
 package pg
 
 import (
-	"runtime"
-
+	"fmt"
 	"github.com/golang/glog"
+	"runtime"
 )
 
 // Not thread-safe.
@@ -100,6 +100,86 @@ func (tx *Tx) Query(coll Collection, q string, args ...interface{}) (*Result, er
 		return nil, err
 	}
 	return res, nil
+}
+
+func (tx *Tx) Rower(row interface{}, cb func(), q string, args ...interface{}) error {
+	if tx.done {
+		return errTxDone
+	}
+
+	cn := tx.conn()
+
+	if err := writeQueryMsg(cn.buf, q, args...); err != nil {
+		tx.setErr(err)
+		return err
+	}
+
+	if err := cn.Flush(); err != nil {
+		tx.setErr(err)
+		return err
+	}
+
+	err := func() (e error) {
+		var columns []string
+		for {
+			c, msgLen, err := cn.ReadMsgType()
+			if err != nil {
+				return err
+			}
+			switch c {
+			case rowDescriptionMsg:
+				columns, err = readRowDescription(cn)
+				if err != nil {
+					return err
+				}
+			case dataRowMsg:
+				if err := readDataRow(cn, row, columns); err != nil {
+					e = err
+				} else {
+					cb()
+				}
+			case commandCompleteMsg:
+				b, err := cn.ReadN(msgLen)
+				if err != nil {
+					return err
+				}
+				//res = newResult(b)
+				_ = b
+			case readyForQueryMsg:
+				_, err := cn.ReadN(msgLen)
+				if err != nil {
+					return err
+				}
+				return nil
+			case errorResponseMsg:
+				var err error
+				e, err = cn.ReadError()
+				if err != nil {
+					return err
+				}
+			case noticeResponseMsg:
+				if err := logNotice(cn, msgLen); err != nil {
+					return err
+				}
+			case parameterStatusMsg:
+				if err := logParameterStatus(cn, msgLen); err != nil {
+					return err
+				}
+			default:
+				if e != nil {
+					return e
+				}
+				return fmt.Errorf("pg: Rower: unexpected message %#x", c)
+			}
+		}
+	}()
+
+	if err != nil {
+		tx.setErr(err)
+		return err
+	}
+
+	return nil
 }
 
 func (tx *Tx) QueryOne(record interface{}, q string, args ...interface{}) (*Result, error) {
