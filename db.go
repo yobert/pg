@@ -267,7 +267,7 @@ func (db *DB) Rower(row interface{}, cb func(), q string, args ...interface{}) e
 			case dataRowMsg:
 				if err := readDataRow(cn, row, columns); err != nil {
 					e = err
-				} else {
+				} else if cb != nil {
 					cb()
 				}
 			case commandCompleteMsg:
@@ -282,7 +282,7 @@ func (db *DB) Rower(row interface{}, cb func(), q string, args ...interface{}) e
 				if err != nil {
 					return err
 				}
-				return nil
+				return e
 			case errorResponseMsg:
 				var err error
 				e, err = cn.ReadError()
