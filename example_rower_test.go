@@ -38,14 +38,14 @@ func Example_rower() {
 		}
 	}
 
-	row := Stuff{}
-
-	err = db.Rower(&row, func() {
-		fmt.Fprintf(os.Stderr, "%#v\n", row)
-		if row.MiddleName != nil {
-			fmt.Fprintln(os.Stderr, "middle name: ["+*row.MiddleName+"]")
-		}
-	}, `select id, first_name, last_name, middle_name from stuff;`)
+	err = db.Rower(`select id, first_name, last_name, middle_name from stuff;`,
+		func(row *Stuff) error {
+			fmt.Fprintf(os.Stderr, "%#v\n", row)
+			if row.MiddleName != nil {
+				fmt.Println(os.Stderr, "middle name: ["+*row.MiddleName+"]")
+			}
+			return nil
+		})
 
 	fmt.Println("hi")
 	// Output: hi
