@@ -1,7 +1,6 @@
 package pg
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"net"
@@ -233,86 +232,6 @@ func (db *DB) Query(coll Collection, q string, args ...interface{}) (res *Result
 		backoff *= 2
 	}
 	return
-}
-
-func (db *DB) Rower(row interface{}, cb func(), q string, args ...interface{}) error {
-	cn, err := db.conn()
-	if err != nil {
-		return err
-	}
-
-	if err := writeQueryMsg(cn.buf, q, args...); err != nil {
-		db.freeConn(cn, err)
-		return err
-	}
-
-	if err := cn.Flush(); err != nil {
-		db.freeConn(cn, err)
-		return err
-	}
-
-	err = func() (e error) {
-		var columns []string
-		for {
-			c, msgLen, err := cn.ReadMsgType()
-			if err != nil {
-				return err
-			}
-			switch c {
-			case rowDescriptionMsg:
-				columns, err = readRowDescription(cn)
-				if err != nil {
-					return err
-				}
-			case dataRowMsg:
-				if err := readDataRow(cn, row, columns); err != nil {
-					e = err
-				} else if cb != nil {
-					cb()
-				}
-			case commandCompleteMsg:
-				b, err := cn.ReadN(msgLen)
-				if err != nil {
-					return err
-				}
-				//res = newResult(b)
-				_ = b
-			case readyForQueryMsg:
-				_, err := cn.ReadN(msgLen)
-				if err != nil {
-					return err
-				}
-				return e
-			case errorResponseMsg:
-				var err error
-				e, err = cn.ReadError()
-				if err != nil {
-					return err
-				}
-			case noticeResponseMsg:
-				if err := logNotice(cn, msgLen); err != nil {
-					return err
-				}
-			case parameterStatusMsg:
-				if err := logParameterStatus(cn, msgLen); err != nil {
-					return err
-				}
-			default:
-				if e != nil {
-					return e
-				}
-				return fmt.Errorf("pg: Rower: unexpected message %#x", c)
-			}
-		}
-	}()
-
-	if err != nil {
-		db.freeConn(cn, err)
-		return err
-	}
-
-	db.freeConn(cn, nil)
-	return nil
 }
 
 func (db *DB) QueryOne(record interface{}, q string, args ...interface{}) (*Result, error) {

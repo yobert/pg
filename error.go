@@ -15,6 +15,7 @@ var (
 	errTxDone         = errorf("pg: transaction has already been committed or rolled back")
 	errStmtClosed     = errorf("pg: statement is closed")
 	errListenerClosed = errorf("pg: listener is closed")
+	errBadRower       = errorf("pg: invalid row callback")
 )
 
 var (

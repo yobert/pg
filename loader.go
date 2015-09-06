@@ -38,6 +38,75 @@ func (discardLoader) LoadColumn(colIdx int, colName string, b []byte) error {
 
 //------------------------------------------------------------------------------
 
+type callbackLoader struct {
+	cb            reflect.Value // reflect.Func
+	in_v          []reflect.Value
+	in_t          []reflect.Type
+	struct_loader *structLoader // will remain nil for callbacks with explicit arguments
+}
+
+var _ ColumnLoader = &callbackLoader{}
+
+func newCallbackLoader(cb reflect.Value) *callbackLoader {
+
+	l := &callbackLoader{
+		cb: cb,
+	}
+
+	n := cb.Type().NumIn()
+
+	l.in_t = make([]reflect.Type, n)
+	for i := 0; i < n; i++ {
+		l.in_t[i] = cb.Type().In(i)
+	}
+
+	l.in_v = make([]reflect.Value, n)
+
+	if n == 1 && l.in_t[0].Kind() == reflect.Struct {
+		l.in_v[0] = reflect.New(l.in_t[0]).Elem()
+		l.struct_loader = newStructLoader(l.in_v[0])
+	}
+
+	return l
+}
+
+func (l *callbackLoader) LoadColumn(colIdx int, colName string, b []byte) error {
+	if l.struct_loader != nil {
+		return l.struct_loader.LoadColumn(colIdx, colName, b)
+	}
+
+	if colIdx >= len(l.in_t) {
+		return errorf("pg: callback function does not take enough arguments for field %q", colName)
+	}
+
+	v := reflect.New(l.in_t[colIdx])
+
+	err := DecodeValue(v, b)
+	if err != nil {
+		return err
+	}
+
+	l.in_v[colIdx] = v.Elem()
+	return nil
+}
+
+func (l *callbackLoader) Call() error {
+	r := l.cb.Call(l.in_v)
+	if len(r) != 1 {
+		return errBadRower
+	}
+	if r[0].IsNil() {
+		return nil
+	}
+	err, ok := r[0].Interface().(error)
+	if !ok {
+		return errBadRower
+	}
+	return err
+}
+
+//------------------------------------------------------------------------------
+
 type structLoader struct {
 	v      reflect.Value // reflect.Struct
 	fields map[string]*pgValue
