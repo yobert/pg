@@ -2,7 +2,7 @@ package pg_test
 
 import (
 	"fmt"
-	"gopkg.in/pg.v3"
+	"github.com/yobert/pg"
 	"os"
 )
 

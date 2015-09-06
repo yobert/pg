@@ -9,7 +9,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 
-	"gopkg.in/pg.v3"
+	"github.com/yobert/pg"
 )
 
 func BenchmarkFormatQWithoutArgs(b *testing.B) {

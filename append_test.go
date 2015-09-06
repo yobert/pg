@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"gopkg.in/pg.v3"
+	"github.com/yobert/pg"
 )
 
 type structFormatter struct {

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"gopkg.in/pg.v3/pgutil"
+	"github.com/yobert/pg/pgutil"
 )
 
 type valueAppender func([]byte, reflect.Value) []byte

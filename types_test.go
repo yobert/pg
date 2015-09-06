@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"gopkg.in/pg.v3"
+	"github.com/yobert/pg"
 )
 
 type JSONMap map[string]interface{}
