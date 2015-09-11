@@ -92,6 +92,9 @@ func (l *callbackLoader) LoadColumn(colIdx int, colName string, b []byte) error 
 
 func (l *callbackLoader) Call() error {
 	r := l.cb.Call(l.in_v)
+	if len(r) == 0 {
+		return nil
+	}
 	if len(r) != 1 {
 		return errBadRower
 	}
