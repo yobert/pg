@@ -11,11 +11,14 @@ var (
 	ErrNoRows    = errorf("pg: no rows in result set")
 	ErrMultiRows = errorf("pg: multiple rows in result set")
 
-	errClosed         = errorf("pg: database is closed")
-	errTxDone         = errorf("pg: transaction has already been committed or rolled back")
-	errStmtClosed     = errorf("pg: statement is closed")
-	errListenerClosed = errorf("pg: listener is closed")
-	errBadRower       = errorf("pg: invalid row callback")
+	errClosed                  = errorf("pg: database is closed")
+	errTxDone                  = errorf("pg: transaction has already been committed or rolled back")
+	errStmtClosed              = errorf("pg: statement is closed")
+	errListenerClosed          = errorf("pg: listener is closed")
+	errCallbackReturnsTooMuch  = errorf("pg: row callback returns too many variables")
+	errCallbackReturnsNotError = errorf("pg: row callback must return error or nothing")
+	errNoCallback              = errorf("pg: no row callback specified")
+	errNilCallback             = errorf("pg: nil callback specified")
 )
 
 var (

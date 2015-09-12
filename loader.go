@@ -95,15 +95,15 @@ func (l *callbackLoader) Call() error {
 	if len(r) == 0 {
 		return nil
 	}
-	if len(r) != 1 {
-		return errBadRower
+	if len(r) > 1 {
+		return errCallbackReturnsTooMuch
 	}
 	if r[0].IsNil() {
 		return nil
 	}
 	err, ok := r[0].Interface().(error)
 	if !ok {
-		return errBadRower
+		return errCallbackReturnsNotError
 	}
 	return err
 }

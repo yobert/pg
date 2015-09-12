@@ -7,13 +7,13 @@ import (
 
 func (db *DB) Rower(q string, x ...interface{}) error {
 	if len(x) == 0 {
-		return errBadRower
+		return errNoCallback
 	}
 	args := x[:len(x)-1]
 	cb := x[len(x)-1]
 
 	if cb == nil {
-		return errBadRower
+		return errNilCallback
 	}
 
 	cn, err := db.conn()
@@ -100,13 +100,13 @@ func (db *DB) Rower(q string, x ...interface{}) error {
 
 func (tx *Tx) Rower(q string, x ...interface{}) error {
 	if len(x) == 0 {
-		return errBadRower
+		return errNoCallback
 	}
 	args := x[:len(x)-1]
 	cb := x[len(x)-1]
 
 	if cb == nil {
-		return errBadRower
+		return errNilCallback
 	}
 
 	if tx.done {
