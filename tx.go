@@ -1,9 +1,8 @@
 package pg
 
 import (
-	"runtime"
-
 	"github.com/golang/glog"
+	"runtime"
 )
 
 // Not thread-safe.
