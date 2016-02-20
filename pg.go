@@ -1,4 +1,4 @@
-package pg // import "gopkg.in/pg.v3"
+package pg // import "github.com/yobert/pg"
 
 // Collection is a set of records mapped to database rows.
 type Collection interface {

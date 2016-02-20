@@ -6,7 +6,7 @@ import (
 
 	. "gopkg.in/check.v1"
 
-	"gopkg.in/pg.v3"
+	"github.com/yobert/pg"
 )
 
 var _ = Suite(&ListenerTest{})

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"gopkg.in/pg.v3/pgutil"
+	"github.com/yobert/pg/pgutil"
 )
 
 func Decode(dst interface{}, b []byte) error {

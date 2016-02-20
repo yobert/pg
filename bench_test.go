@@ -11,7 +11,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 
-	"gopkg.in/pg.v3"
+	"github.com/yobert/pg"
 )
 
 func init() {

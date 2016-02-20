@@ -8,7 +8,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"gopkg.in/pg.v3"
+	"github.com/yobert/pg"
 )
 
 func TestPG(t *testing.T) {

@@ -11,7 +11,7 @@ import (
 	_ "github.com/lib/pq"
 	. "gopkg.in/check.v1"
 
-	"gopkg.in/pg.v3"
+	"github.com/yobert/pg"
 )
 
 func TestUnixSocket(t *testing.T) {

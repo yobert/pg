@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"gopkg.in/pg.v3"
+	"github.com/yobert/pg"
 )
 
 type jsonMap map[string]interface{}

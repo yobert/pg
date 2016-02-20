@@ -141,6 +141,21 @@ func writePasswordMsg(buf *buffer, password string) {
 }
 
 func writeQueryMsg(buf *buffer, q string, args ...interface{}) error {
+	l := ""
+	li := 0
+	for _, c := range q {
+		if c == '?' {
+			if li >= len(args) {
+				l += "?"
+			} else {
+				l += fmt.Sprintf("%#v", args[li])
+			}
+			li++
+		} else {
+			l += string(c)
+		}
+	}
+	fmt.Println("\033[36m" + l + "\033[m")
 	buf.StartMessage(queryMsg)
 	bytes, err := AppendQ(buf.Bytes, q, args...)
 	if err != nil {

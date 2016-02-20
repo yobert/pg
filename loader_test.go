@@ -5,7 +5,7 @@ import (
 
 	. "gopkg.in/check.v1"
 
-	"gopkg.in/pg.v3"
+	"github.com/yobert/pg"
 )
 
 type LoaderTest struct {
