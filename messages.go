@@ -147,7 +147,7 @@ func writeQueryMsg(buf *buffer, q string, args ...interface{}) (err error) {
 			l += string(c)
 		}
 	}
-	fmt.Println("\033[36m" + l + "\033[m")
+	//fmt.Println("\033[36m" + l + "\033[m")
 	buf.StartMessage(queryMsg)
 	buf.B, err = AppendQ(buf.B, q, args...)
 	if err != nil {
